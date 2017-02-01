@@ -72,17 +72,31 @@ namespace JenkinsStatusWindow
 
         private void UpdateText()
         {
-            var textResult = GetText();
-
-            // Update the window on the main thread
-            _dispatcher.Invoke(() =>
+            try
             {
-                _floatingStatusWindow.SetText(textResult.WindowText.ToString());
+                var textResult = GetText();
 
-                _floatingStatusWindow.IconToolTipText = textResult.TooltipText.ToString();
-            });
+                // Update the window on the main thread
+                _dispatcher.Invoke(() =>
+                {
+                    _floatingStatusWindow.SetText(textResult.WindowText.ToString());
 
-            _refreshTimer.Start();
+                    _floatingStatusWindow.IconToolTipText = textResult.TooltipText.ToString();
+                });
+            }
+            catch (Exception exception)
+            {
+                _dispatcher.Invoke(() =>
+                {
+                    _floatingStatusWindow.SetText(exception.Message);
+
+                    _floatingStatusWindow.IconToolTipText = exception.Message;
+                });
+            }
+            finally
+            {
+                _refreshTimer.Start();
+            }
         }
 
         private TextResult GetText()
