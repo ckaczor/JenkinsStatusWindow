@@ -1,0 +1,87 @@
+﻿<Window x:Class="JenkinsStatusWindow.Options.JenkinsProjectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:properties="clr-namespace:JenkinsStatusWindow.Properties"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Title="JenkinsProjectWindow"
+        Height="160"
+        Width="350"
+        FocusManager.FocusedElement="{Binding ElementName=NameTextBox}">
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Content="{x:Static properties:Resources.JenkinsProjectNameLabel}"
+                   VerticalContentAlignment="Center"
+                   Target="{Binding ElementName=NameTextBox}"
+                   Grid.Row="0"
+                   Grid.Column="0"
+                   Margin="6"
+                   Padding="0" />
+            <TextBox Name="NameTextBox"
+                     Grid.Column="1"
+                     Text="{Binding Path=Name, UpdateSourceTrigger=Explicit, ValidatesOnExceptions=true}"
+                     Grid.Row="0"
+                     VerticalAlignment="Center"
+                     Margin="6,0,6,0" />
+
+            <Label Content="{x:Static properties:Resources.JenkinsProjectUrlLabel}"
+                   VerticalContentAlignment="Center"
+                   Target="{Binding ElementName=UrlTextBox}"
+                   Grid.Row="1"
+                   Grid.Column="0"
+                   Margin="6"
+                   Padding="0" />
+            <TextBox Name="UrlTextBox"
+                     Grid.Column="1"
+                     Text="{Binding Path=Url, UpdateSourceTrigger=Explicit, ValidatesOnExceptions=true}"
+                     Grid.Row="1"
+                     VerticalAlignment="Center"
+                     Margin="6,0,6,0" />
+
+
+            <Label Content="{x:Static properties:Resources.JenkinsProjectEnabledLabel}"
+                   VerticalContentAlignment="Center"
+                   Target="{Binding ElementName=NameTextBox}"
+                   Grid.Row="2"
+                   Grid.Column="0"
+                   Margin="6"
+                   Padding="0" />
+            <CheckBox Grid.Column="1"
+                      IsChecked="{Binding Path=Enabled, UpdateSourceTrigger=Explicit, ValidatesOnExceptions=true}"
+                      Grid.Row="2"
+                      Margin="5,0,5,0"
+                      VerticalAlignment="Center" />
+            <StackPanel Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="6">
+                <Button Content="{x:Static properties:Resources.OkayButton}"
+                        Height="23"
+                        VerticalAlignment="Bottom"
+                        Width="75"
+                        IsDefault="True"
+                        Click="HandleOkayButtonClick"
+                        Margin="0,0,8,0" />
+                <Button Content="{x:Static properties:Resources.CancelButton}"
+                        Height="23"
+                        VerticalAlignment="Bottom"
+                        Width="75"
+                        IsCancel="True" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

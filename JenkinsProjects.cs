@@ -17,14 +17,6 @@ namespace JenkinsStatusWindow
         {
             var jenkinsProjects = JsonConvert.DeserializeObject<JenkinsProjects>(serializedData) ?? new JenkinsProjects();
 
-            if (jenkinsProjects.Count == 0)
-            {
-                jenkinsProjects.Add(new JenkinsProject { Name = "VPW - Phase 2", Url = "http://jenkins-master.vertical.com:8080/job/vpw/" });
-                jenkinsProjects.Add(new JenkinsProject { Name = "VPW - Phase 3", Url = "http://172.22.1.60:8080/view/Phase%203%20Apps/job/P3%20VPW/" });
-                jenkinsProjects.Add(new JenkinsProject { Name = "Company Manager", Url = "http://172.22.1.60:8080/view/Phase%203%20Apps/job/P3%20Company%20Manager/" });
-                jenkinsProjects.Add(new JenkinsProject { Name = "Profile", Url = "http://172.22.1.60:8080/view/Phase%203%20Apps/job/P3%20Profile/" });
-            }
-
             return jenkinsProjects;
         }
 

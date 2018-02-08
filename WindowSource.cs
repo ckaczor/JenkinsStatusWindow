@@ -2,13 +2,17 @@
 using FloatingStatusWindowLibrary;
 using JenkinsStatusWindow.Properties;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Threading;
+using Common.Wpf.Windows;
+using JenkinsStatusWindow.Options;
 
 namespace JenkinsStatusWindow
 {
@@ -23,7 +27,9 @@ namespace JenkinsStatusWindow
         private readonly FloatingStatusWindow _floatingStatusWindow;
         private readonly Timer _refreshTimer;
         private readonly Dispatcher _dispatcher;
-        private readonly JenkinsProjects _jenkinsProjects;
+
+        private JenkinsProjects _jenkinsProjects;
+        private CategoryWindow _optionsWindow;
 
         internal WindowSource()
         {
@@ -54,10 +60,7 @@ namespace JenkinsStatusWindow
 
         public string WindowSettings
         {
-            get
-            {
-                return Settings.Default.WindowSettings;
-            }
+            get => Settings.Default.WindowSettings;
             set
             {
                 Settings.Default.WindowSettings = value;
@@ -95,6 +98,7 @@ namespace JenkinsStatusWindow
             }
             finally
             {
+                _refreshTimer.Interval = 60000;
                 _refreshTimer.Start();
             }
         }
@@ -103,12 +107,14 @@ namespace JenkinsStatusWindow
         {
             var textResult = new TextResult();
 
-            if (_jenkinsProjects.Count == 0)
+            var enabledProjects = _jenkinsProjects.Where(p => p.Enabled).ToList();
+
+            if (enabledProjects.Count == 0)
                 return textResult;
 
             textResult.WindowText.AppendLine(Resources.LastBuildNumberHeader);
 
-            foreach (var jenkinsProject in _jenkinsProjects)
+            foreach (var jenkinsProject in enabledProjects)
             {
                 if (textResult.WindowText.Length > 0)
                     textResult.WindowText.AppendLine();
@@ -128,7 +134,7 @@ namespace JenkinsStatusWindow
                 };
                 credential.Load();
 
-                var httpWebRequest = (HttpWebRequest)WebRequest.Create(buildNumberUrl);
+                var httpWebRequest = (HttpWebRequest) WebRequest.Create(buildNumberUrl);
 
                 httpWebRequest.ContentType = "application/x-www-form-urlencoded";
                 httpWebRequest.Method = "POST";
@@ -141,7 +147,7 @@ namespace JenkinsStatusWindow
 
                 try
                 {
-                    var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                    var httpResponse = (HttpWebResponse) httpWebRequest.GetResponse();
 
                     var stream = httpResponse.GetResponseStream();
 
@@ -174,6 +180,49 @@ namespace JenkinsStatusWindow
             }
 
             return textResult;
+        }
+
+        public bool HasSettingsMenu => true;
+
+        public bool HasRefreshMenu => true;
+
+        public void ShowSettings()
+        {
+            var panels = new List<CategoryPanel>
+            {
+                new GeneralOptionsPanel(),
+                new JenkinsProjectsOptionsPanel(),
+                new AboutOptionsPanel()
+            };
+
+            var jenkinsProjects = JenkinsProjects.Load();
+
+            if (_optionsWindow == null)
+            {
+                _optionsWindow = new CategoryWindow(jenkinsProjects, panels, Resources.ResourceManager, "OptionsWindow");
+                _optionsWindow.Closed += (o, args) => { _optionsWindow = null; };
+            }
+
+            var dialogResult = _optionsWindow.ShowDialog();
+
+            if (dialogResult.HasValue && dialogResult.Value)
+            {
+                jenkinsProjects.Save();
+
+                _jenkinsProjects = JenkinsProjects.Load();
+
+                Refresh();
+            }
+        }
+
+        public void Refresh()
+        {
+            _refreshTimer.Stop();
+
+            _floatingStatusWindow.SetText(Resources.Loading);
+
+            _refreshTimer.Interval = 500;
+            _refreshTimer.Start();
         }
     }
 }

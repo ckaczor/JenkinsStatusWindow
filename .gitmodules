@@ -1,0 +1,6 @@
+[submodule "FloatingStatusWindow"]
+	path = FloatingStatusWindow
+	url = https://github.com/ckaczor/FloatingStatusWindow.git
+[submodule "Common"]
+	path = Common
+	url = https://github.com/ckaczor/Common.git
